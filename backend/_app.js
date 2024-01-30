@@ -1,5 +1,21 @@
+require("dotenv").config({
+    path: process.env.NODE_ENV === "production" ? ".env" : `.env.${process.env.NODE_ENV}`
+});
+
 const express = require("express");
 const app = express();
+const mongoose =require("mongoose");
+
+mongoose.connect("mongodb+srv://"+process.env.DB_username+":"+process.env.DB_password+"@cluster0.1wcy188.mongodb.net/?retryWrites=true&w=majority", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("Connexion à MongoDB réussie !"))
+.catch(() => {
+    console.log("Connexion à MongoDB échouée !");
+    process.exit();
+});
+
 
 app.use((req, res, next) => {
 
