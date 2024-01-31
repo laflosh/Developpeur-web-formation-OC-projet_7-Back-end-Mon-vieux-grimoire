@@ -7,6 +7,8 @@ const app = express();
 const mongoose =require("mongoose");
 const bodyParser = require("body-parser");
 
+const userRoutes = require("./_routes/user");
+
 mongoose.connect("mongodb+srv://"+process.env.DB_username+":"+process.env.DB_password+"@cluster0.1wcy188.mongodb.net/?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -28,4 +30,10 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 
+app.use("/api/auth", userRoutes);
+
 module.exports = app;
+
+// compte test:
+// test@test.comp
+// izyudfgu584
