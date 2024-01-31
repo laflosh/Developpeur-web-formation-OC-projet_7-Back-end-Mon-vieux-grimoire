@@ -5,6 +5,7 @@ require("dotenv").config({
 const express = require("express");
 const app = express();
 const mongoose =require("mongoose");
+const bodyParser = require("body-parser");
 
 mongoose.connect("mongodb+srv://"+process.env.DB_username+":"+process.env.DB_password+"@cluster0.1wcy188.mongodb.net/?retryWrites=true&w=majority", {
     useNewUrlParser: true,
@@ -23,6 +24,8 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Headers", "Origin, X-requested-With, Content, Accept, Content-Type, Authorization");
     res.setHeader("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, PATCH, OPTION");
     next();
-})
+});
+
+app.use(bodyParser.json());
 
 module.exports = app;
