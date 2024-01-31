@@ -35,5 +35,5 @@ app.use("/api/auth", userRoutes);
 module.exports = app;
 
 // compte test:
-// test@test.comp
+// test@test.com
 // izyudfgu584
