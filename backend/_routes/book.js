@@ -5,4 +5,6 @@ const bookCtrl = require("../_controllers/book");
 
 router.get("/", bookCtrl.getAllBooks);
 
+router.get("/:id", bookCtrl.getOneBook)
+
 module.exports = router;
