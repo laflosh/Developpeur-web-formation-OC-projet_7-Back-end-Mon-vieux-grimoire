@@ -15,3 +15,10 @@ exports.getOneBook = (req, res, next) => {
     .catch(error => res.status(404).json({ error }));
 
 };
+
+exports.createBook = (req, res, next) => {
+
+    const bookObject = req.body;
+    console.log(bookObject)
+
+};
