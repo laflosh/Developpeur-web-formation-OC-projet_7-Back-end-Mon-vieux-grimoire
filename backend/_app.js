@@ -43,3 +43,6 @@ module.exports = app;
 // compte test:
 // test@test.com
 // izyudfgu584
+
+// autretest@test.com
+// dighfsiduhfisuof

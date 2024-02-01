@@ -18,7 +18,21 @@ exports.getOneBook = (req, res, next) => {
 
 exports.createBook = (req, res, next) => {
 
-    const bookObject = req.body;
-    console.log(bookObject)
+    const bookObject = JSON.parse(req.body.book);
+    delete bookObject._id;
+    delete bookObject.userId;
 
+    const book = new Book ({
+
+        ...bookObject,
+        userId: req.auth.userId,
+        imageUrl: `${req.protocol}://${req.get("host")}/_images/booksImages/${req.file.filename}`,
+        ratings : [],
+        averageRating: 0
+    });
+    
+    book.save()
+    .then(() => res.status(201).json({ message: "Livre ajouter à la base de donnée."}))
+    .catch(error => res.status(400).json({ error }));
+    
 };
