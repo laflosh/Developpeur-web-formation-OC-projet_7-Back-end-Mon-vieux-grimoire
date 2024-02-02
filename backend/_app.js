@@ -36,7 +36,7 @@ app.use("/api/auth", userRoutes);
 
 app.use("/api/books", bookRouter);
 
-app.use("/_images/booksImages", express.static(path.join(__dirname, "booksImages")))
+app.use("/booksImages", express.static(path.join(__dirname, "/_images/booksImages")))
 
 module.exports = app;
 

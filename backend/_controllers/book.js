@@ -3,7 +3,7 @@ const Book = require("../_models/Book");
 exports.getAllBooks = (req, res, next) => {
 
     Book.find()
-    .then(books => res.status(200).json({ books }))
+    .then(books => res.status(200).json(books))
     .catch(error => res.status(400).json({ error }));
 
 };
@@ -11,8 +11,16 @@ exports.getAllBooks = (req, res, next) => {
 exports.getOneBook = (req, res, next) => {
 
     Book.findOne({ _id: req.params.id})
-    .then(book => res.status(200).json({ book }))
+    .then(book => res.status(200).json(book))
     .catch(error => res.status(404).json({ error }));
+
+};
+
+exports.getBestRating = (req, res, next) => {
+
+    const allBooks = Book.find()
+    .then(() => res.status(200).json(allBooks))
+    .catch(error => res.status(400).json({ error }));
 
 };
 
@@ -22,19 +30,33 @@ exports.createBook = (req, res, next) => {
     delete bookObject._id;
     delete bookObject.userId;
 
-    const book = new Book ({
+    let book = bookObject.ratings[0].grade > 0 ? ( new Book ({
 
         ...bookObject,
         userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get("host")}/_images/booksImages/${req.file.filename}`,
-        ratings : [],
-        averageRating: 0
-    });
+        imageUrl: `${req.protocol}://${req.get("host")}/booksImages/${req.file.filename}`,
+        ratings: [
+            {
+                userId: req.auth.userId,
+                rating: bookObject.ratings.rating
+            }
+        ],
+        averageRating: bookObject.averageRating
+        
+    })) : ( new Book ({
+
+        ...bookObject,
+        userId: req.auth.userId,
+        imageUrl: `${req.protocol}://${req.get("host")}/booksImages/${req.file.filename}`,
+        ratings: [],
+        averageRating: 0 
+    
+    }));
     
     book.save()
-    .then(() => res.status(201).json({ message: "Livre ajouter à la base de donnée."}))
+    .then(() => res.status(201).json({ message: "Livre ajouté à la base de donnée."}))
     .catch(error => res.status(400).json({ error }));
-    
+
 };
 
 exports.modifyBook = (req, res, next) => {
@@ -42,7 +64,7 @@ exports.modifyBook = (req, res, next) => {
     const bookObject = req.file ? {
 
         ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get("host")}/_images/booksImages/${req.file.filename}`
+        imageUrl: `${req.protocol}://${req.get("host")}/booksImages/${req.file.filename}`
 
     } : { ...req.body };
 
@@ -53,7 +75,7 @@ exports.modifyBook = (req, res, next) => {
 
         if ( book.userId !== req.auth.userId ) {
 
-            res.status(401).json({ message: "Vous ne disposez pas des droits pour effectuée cette action."});
+            res.status(401).json({ message: "Vous ne disposez pas des droits pour effectuer cette action."});
 
         } else {
 
