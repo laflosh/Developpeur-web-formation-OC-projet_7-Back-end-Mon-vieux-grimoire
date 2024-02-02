@@ -79,6 +79,64 @@ exports.createBook = (req, res, next) => {
 
 };
 
+exports.addBookRating = (req, res, next) => {
+
+    Book.findOne({ _id: req.params.id})
+    .then(book => {
+        let allRating = book.ratings;
+
+        let allRatingValue = [];
+        allRating.forEach(elm => {allRatingValue.push(elm.rating)})
+
+        let sommeAllRating = allRatingValue.reduce((acc, curr) => acc + curr) + req.body.rating;
+
+        let newAverageRating = sommeAllRating / (allRating.length + 1);
+
+        allRating.forEach(property => { 
+            if (property.userId === req.body.userId) {
+
+                res.status(401).json({ message : "Vous avez déjà noté ce livre."});
+
+            } else {
+
+                Book.updateOne({ _id: req.params.id },{$push:{
+
+                    ratings: [
+                        {
+                        userId: req.auth.userId,
+                        rating: req.body.rating
+                        }
+                    ],
+
+                }})
+                .then(() => {
+
+                    Book.updateOne({ _id: req.params.id },{
+
+                        averageRating: newAverageRating
+    
+                    })
+                    .then(() => {
+
+                        Book.findOne({ _id: req.params.id})
+                        .then(book => res.status(201).json( book ))
+                        .catch(error => res.status(401).json({ error }));
+
+                    })
+                    .catch(error => res.status(401).json({ error }));
+
+                })
+                .catch(error => res.status(401).json({ error }));
+
+            }
+        
+        })
+
+    })
+    .catch( error => res.status(400).json({ error }));
+
+};
+
 exports.modifyBook = (req, res, next) => {
 
     const bookObject = req.file ? {

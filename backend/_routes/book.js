@@ -13,6 +13,8 @@ router.get("/:id", bookCtrl.getOneBook);
 
 router.post("/", auth , multer, bookCtrl.createBook);
 
+router.post("/:id/rating", auth , bookCtrl.addBookRating);
+
 router.put("/:id", auth , multer,  bookCtrl.modifyBook);
 
 router.delete("/:id", auth , bookCtrl.deleteBook);
