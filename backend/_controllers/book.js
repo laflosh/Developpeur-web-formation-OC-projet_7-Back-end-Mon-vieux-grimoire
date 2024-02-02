@@ -24,21 +24,9 @@ exports.getOneBook = (req, res, next) => {
 exports.getBestRating = (req, res, next) => {
 
     Book.find()
-    .then(allBooks => {
-
-        allBooks.sort((a ,b ) => (a.averageRating < b.averageRating ? 1 : -1));
-    
-        let bestRating = [];
-
-        for (let i = 0; i < 3 ; i++){
-
-            bestRating.push(allBooks[i]);
-
-        }
-
-        res.status(200).json(bestRating);
-        
-    })
+    .sort({averageRating: -1})
+    .limit(3)
+    .then(allBooks => res.status(200).json( allBooks ))
     .catch(error => res.status(400).json({ error }));
 
 };
@@ -120,7 +108,6 @@ exports.addBookRating = (req, res, next) => {
 
                         Book.findOne({ _id: req.params.id})
                         .then(book => res.status(201).json( book ))
-                        .catch(error => res.status(401).json({ error }));
 
                     })
                     .catch(error => res.status(401).json({ error }));
@@ -130,7 +117,7 @@ exports.addBookRating = (req, res, next) => {
 
             }
         
-        })
+        })   
 
     })
     .catch( error => res.status(400).json({ error }));
