@@ -1,6 +1,10 @@
 const Book = require("../_models/Book");
 const fs = require("fs");
 
+const compareRating = (a, b) => {
+    return a - b;
+};
+
 exports.getAllBooks = (req, res, next) => {
 
     Book.find()
@@ -19,8 +23,22 @@ exports.getOneBook = (req, res, next) => {
 
 exports.getBestRating = (req, res, next) => {
 
-    const allBooks = Book.find()
-    .then(() => res.status(200).json(allBooks))
+    Book.find()
+    .then(allBooks => {
+
+        allBooks.sort((a ,b ) => (a.averageRating < b.averageRating ? 1 : -1));
+    
+        let bestRating = [];
+
+        for (let i = 0; i < 3 ; i++){
+
+            bestRating.push(allBooks[i]);
+
+        }
+
+        res.status(200).json(bestRating);
+        
+    })
     .catch(error => res.status(400).json({ error }));
 
 };
@@ -28,6 +46,7 @@ exports.getBestRating = (req, res, next) => {
 exports.createBook = (req, res, next) => {
 
     const bookObject = JSON.parse(req.body.book);
+
     delete bookObject._id;
     delete bookObject.userId;
 
@@ -39,7 +58,7 @@ exports.createBook = (req, res, next) => {
         ratings: [
             {
                 userId: req.auth.userId,
-                rating: bookObject.ratings.grade
+                rating: bookObject.ratings[0].grade
             }
         ],
         averageRating: bookObject.averageRating
