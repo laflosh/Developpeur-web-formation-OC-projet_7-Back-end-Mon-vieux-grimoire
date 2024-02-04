@@ -11,6 +11,10 @@
 # production
 /build
 
+# Images
+_images/booksImages/*.jpg
+_images/booksImages/*.png
+
 # misc
 .DS_Store
 .env.local

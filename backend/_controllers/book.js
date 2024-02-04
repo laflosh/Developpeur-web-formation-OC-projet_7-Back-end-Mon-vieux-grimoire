@@ -1,15 +1,12 @@
 const Book = require("../_models/Book");
+const sharp = require("sharp");
 const fs = require("fs");
-
-const compareRating = (a, b) => {
-    return a - b;
-};
 
 exports.getAllBooks = (req, res, next) => {
 
     Book.find()
     .then(books => res.status(200).json(books))
-    .catch(error => res.status(400).json({ error }));
+    .catch(error => res.status(400).json( error ));
 
 };
 
@@ -17,7 +14,7 @@ exports.getOneBook = (req, res, next) => {
 
     Book.findOne({ _id: req.params.id})
     .then(book => res.status(200).json(book))
-    .catch(error => res.status(404).json({ error }));
+    .catch(error => res.status(404).json( error ));
 
 };
 
@@ -27,39 +24,40 @@ exports.getBestRating = (req, res, next) => {
     .sort({averageRating: -1})
     .limit(3)
     .then(allBooks => res.status(200).json( allBooks ))
-    .catch(error => res.status(400).json({ error }));
+    .catch(error => res.status(400).json( error ));
 
 };
 
-exports.createBook = (req, res, next) => {
+exports.createBook = async (req, res, next) => {
 
-    const bookObject = JSON.parse(req.body.book);
+    const dto = JSON.parse(req.body.book);
 
-    delete bookObject._id;
-    delete bookObject.userId;
+    delete dto._id;
+    dto.userId = req.auth.userId;
 
-    let book = bookObject.ratings[0].grade > 0 ? ( new Book ({
+    if (req.file != undefined) {
 
-        ...bookObject,
-        userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get("host")}/booksImages/${req.file.filename}`,
-        ratings: [
-            {
-                userId: req.auth.userId,
-                rating: bookObject.ratings[0].grade
-            }
-        ],
-        averageRating: bookObject.averageRating
-        
-    })) : ( new Book ({
+        let filename = await multer.createImage(req.file);
+        dto.imageUrl = `${req.protocol}://${req.get("host")}/booksImages/${filename}`;
+    }
 
-        ...bookObject,
-        userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get("host")}/booksImages/${req.file.filename}`,
+    let book = new Book ({
+
+        ...dto,
         ratings: [],
-        averageRating: 0 
-    
-    }));
+        averageRating: 0
+
+    })
+
+    if (dto.ratings[0].grade > 0) {
+
+        book.ratings.push({
+            userId: req.auth.userId,
+            rating: dto.ratings[0].rating
+        })
+
+        book.averageRating = book.ratings[0].rating
+    }
     
     book.save()
     .then(() => res.status(201).json({ message: "Livre ajouté à la base de donnée."}))
