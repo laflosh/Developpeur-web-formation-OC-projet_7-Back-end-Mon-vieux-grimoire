@@ -61,7 +61,7 @@ exports.createBook = async (req, res, next) => {
     
     book.save()
     .then(() => res.status(201).json({ message: "Livre ajouté à la base de donnée."}))
-    .catch(error => res.status(400).json({ error }));
+    .catch(error => res.status(400).json( error ));
 
 };
 
@@ -161,17 +161,17 @@ exports.deleteBook = (req, res, next) => {
 
             res.status(401).json({ message: "Vous n'êtes pas autorisé à faire cette action."});
 
-        } else {
-
-            const filename = book.imageUrl.split("/booksImages/")[1];
-
-            fs.unlink(`_images/booksImages/${filename}`, () => {
-                Book.deleteOne({ _id: req.params.id })
-                .then(() => res.status(200).json({ message: "Livre supprimé."}))
-                .catch(error => res.status(401).json({ error }));
-            })
         }
+
+        const filename = book.imageUrl.split("/booksImages/")[1];
+
+        fs.unlinkSync(`_images/booksImages/${filename}`)
+
+        Book.deleteOne({ _id: book._id })
+        .then(() => res.status(200).json({ message: "Livre supprimé."}))
+        .catch(error => res.status(401).json( error ));
+        
     })
-    .catch(error => res.status(500).json({ error }));
+    .catch(error => res.status(500).json( error ));
 
 };
