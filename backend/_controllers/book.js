@@ -146,28 +146,29 @@ exports.addBookRating = (req, res, next) => {
     Book.findOne({ _id: req.params.id})
     .then(book => {
 
-        book.ratins.forEach(aRating => { 
-        if (aRating.userId === req.body.userId) {
+        book.ratings.forEach(aRating => { 
+            if (aRating.userId === req.body.userId) {
 
-            res.status(401).json({ message : "Vous avez déjà noté ce livre."});
+                res.status(401).json({ message : "Vous avez déjà noté ce livre."});
 
-        }})
+            }
+        });
 
-        let rating = {
+        const rating = {
 
             userId: req.auth.userId,
             rating: req.body.rating
 
         };
 
-        book.ratings.push(rating)
+        book.ratings.push(rating);
 
         let somme = 0;
         book.ratings.forEach(aRating => {
             somme += aRating.rating;
         });
 
-        book.averageRating = Number(somme / book.rating.length).toFixed(1);
+        book.averageRating = Number(somme / book.ratings.length).toFixed(1);
 
         Book.updateOne({ _id: book._id},{
             $push:{ratings: [rating]},
