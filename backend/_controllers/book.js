@@ -1,6 +1,6 @@
 const Book = require("../_models/Book");
-const sharp = require("sharp");
 const fs = require("fs");
+const multer = require("../_middlewares/multer");
 
 exports.getAllBooks = (req, res, next) => {
 
