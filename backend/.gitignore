@@ -14,6 +14,8 @@
 # Images
 _images/booksImages/*.jpg
 _images/booksImages/*.png
+_images/booksImages/*.webp
+
 
 # misc
 .DS_Store

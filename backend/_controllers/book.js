@@ -53,7 +53,7 @@ exports.createBook = async (req, res, next) => {
 
         book.ratings.push({
             userId: req.auth.userId,
-            rating: dto.ratings[0].rating
+            rating: dto.ratings[0].grade
         })
 
         book.averageRating = book.ratings[0].rating

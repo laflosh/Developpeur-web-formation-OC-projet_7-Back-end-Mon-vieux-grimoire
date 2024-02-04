@@ -17,7 +17,7 @@ module.exports.createImage = async (file) => {
 
     const extension = MIME_TYPES[file.mimetype];
 
-    let name = req.originalname.replaceAll(" ", "_");
+    let name = file.originalname.replaceAll(" ", "_");
     name = name.substring(0, name.lastIndexOf('.'));
     name = name + "_" + Date.now() + "." + extension;
 
