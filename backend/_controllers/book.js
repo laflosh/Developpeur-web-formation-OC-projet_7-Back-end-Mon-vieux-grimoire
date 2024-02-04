@@ -124,31 +124,53 @@ exports.addBookRating = (req, res, next) => {
 
 exports.modifyBook = (req, res, next) => {
 
-    const bookObject = req.file ? {
-
-        ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get("host")}/booksImages/${req.file.filename}`
-
-    } : { ...req.body };
-
-    delete bookObject.userId;
-
     Book.findOne({ _id: req.params.id })
-    .then((book) => {
+    .then( async (book) => {
 
         if ( book.userId !== req.auth.userId ) {
 
             res.status(401).json({ message: "Vous ne disposez pas des droits pour effectuer cette action."});
 
+        }
+
+        let dto = null;
+
+        if (req.file === undefined){
+            
+            dto = { ...req.body };
+
         } else {
 
-            Book.updateOne({ _id: req.params.id}, {...bookObject, _id: req.params.id})
-            .then(() => res.status(200).json({ message: "Livre mis à jour."}))
-            .catch(error => res.status(400).json({ error }));
+            let filename = await multer.createImage(req.file); 
+            dto = JSON.parse(req.body.book);
+            dto.imageUrl = `${req.protocol}://${req.get("host")}/booksImages/${filename}`;
 
         }
+
+        book.title = dto.title;
+        book.author = dto.author;
+        book.year = dto.year;
+        book.genre = dto.genre;
+    
+        if (dto.imageUrl !== undefined) {
+
+            // On supprime toujours l'ancienne image
+            // La configuration multer ajoute un timestamp, donc on a toujours une nouvelle image
+            if(book.imageUrl !== undefined){
+
+                let oldImage = book.imageUrl.split("/booksImages/")[1];
+                fs.unlinkSync(`_images/booksImages/${oldImage}`);
+            }
+
+            book.imageUrl = dto.imageUrl;
+        }
+
+        Book.updateOne({ _id: book._id}, book)
+        .then(() => res.status(200).json({ message: "Livre mis à jour."}))
+        .catch(error => res.status(400).json( error ));
+        
     })
-    .catch(error => res.status(400).json({ error}))
+    .catch(error => res.status(400).json( error ))
 
 };
 
