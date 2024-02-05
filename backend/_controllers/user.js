@@ -7,15 +7,24 @@ exports.signup = (req, res, next) => {
 
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
+
         const user = new User({
             email: req.body.email,
             password: hash
         })
+
         user.save()
         .then(() => res.status(201).json({ message: "Nouveau utilisateur ajouté."}))
-        .catch(error => res.status(400).json( error ));
+        .catch(error => {
+            console.log("Error on exports.signup 2 : " + error );
+            res.status(400).json( "Une erreur s'est produite lors de la création d'un utilisateur");
+        });
+
     })
-    .catch(error => res.status(500).json( error ))
+    .catch(error => {
+        console.log("Error on exports.signup 1 : " + error );
+        res.status(500).json( "Une erreur s'est produite lors de la création d'un utilisateur");
+    });
 
 };
 
@@ -42,17 +51,23 @@ exports.login = (req, res, next) => {
                         userId: user._id,
                         token: jwt.sign(
                             {userId: user._id},
-                            "RANDOM_SECRET_TOKEN",
+                            process.env.random_secret_token,
                             {expiresIn:"24h"}
                         )
                     });
 
                 }
             })
-            .catch(error => res.status(500).json( error ));
+            .catch(error => {
+                console.log("Error on exports.login 2 : " + error );
+                res.status(500).json( "Une erreur s'est produite lors de la connexion d'un utilisateur");
+            });
 
         }
     })
-    .catch(error => res.status(500).json( error ));
+    .catch(error => {
+        console.log("Error on exports.login 1 : " + error );
+        res.status(500).json( "Une erreur s'est produite lors de la connexion d'un utilisateur");
+    });
 
 };

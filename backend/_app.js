@@ -10,14 +10,14 @@ const path = require("path");
 
 const userRoutes = require("./_routes/user");
 const bookRouter = require("./_routes/book");
-
-mongoose.connect("mongodb+srv://"+process.env.DB_username+":"+process.env.DB_password+"@cluster0.1wcy188.mongodb.net/?retryWrites=true&w=majority", {
+const db="mongodb+srv://"+process.env.DB_username+":"+process.env.DB_password+"@"+process.env.DB_cluster+"/"+process.env.DB_name+"?retryWrites=true&w=majority";
+mongoose.connect(db, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
 .then(() => console.log("Connexion à MongoDB réussie !"))
 .catch(() => {
-    console.log("Connexion à MongoDB échouée !");
+    console.log("Connexion à MongoDB échouée !" + db); 
     process.exit();
 });
 

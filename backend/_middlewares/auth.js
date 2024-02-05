@@ -5,7 +5,7 @@ module.exports = (req ,res ,next ) => {
     try {
 
         const token = req.headers.authorization.split(" ")[1];
-        const decodedToken = jwt.verify(token, "RANDOM_SECRET_TOKEN");
+        const decodedToken = jwt.verify(token, process.env.random_secret_token );
         const userId = decodedToken.userId;
 
         req.auth = {
@@ -16,7 +16,9 @@ module.exports = (req ,res ,next ) => {
 
     } catch (error) {
 
-        res.status(401).json({ error });
+        console.log("Error on auth : " + error );
+        res.status(401).json( "Une erreur s'est produite lors de l'authentification");
+        
     };
 
 };

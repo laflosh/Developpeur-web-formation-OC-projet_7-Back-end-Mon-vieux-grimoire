@@ -6,7 +6,10 @@ exports.getAllBooks = (req, res, next) => {
 
     Book.find()
     .then(books => res.status(200).json(books))
-    .catch(error => res.status(400).json( error ));
+    .catch(error => {
+        console.log("Error on exports.getAllBooks : " + error );
+        res.status(400).json( "Une erreur s'est produite lors de la récupération des livres");
+    });
 
 };
 
@@ -14,7 +17,10 @@ exports.getOneBook = (req, res, next) => {
 
     Book.findOne({ _id: req.params.id})
     .then(book => res.status(200).json(book))
-    .catch(error => res.status(404).json( error ));
+    .catch(error => {
+        console.log("Error on exports.getOneBook : " + error );
+        res.status(400).json( "Une erreur s'est produite lors de la récupération d'un livre");
+    });
 
 };
 
@@ -24,7 +30,10 @@ exports.getBestRating = (req, res, next) => {
     .sort({averageRating: -1})
     .limit(3)
     .then(allBooks => res.status(200).json( allBooks ))
-    .catch(error => res.status(400).json( error ));
+    .catch(error => {
+        console.log("Error on exports.getBestRating : " + error );
+        res.status(400).json( "Une erreur s'est produite lors de la récupération des trois livres les mieux notés");
+    });
 
 };
 
@@ -61,7 +70,10 @@ exports.createBook = async (req, res, next) => {
     
     book.save()
     .then(() => res.status(201).json({ message: "Livre ajouté à la base de donnée."}))
-    .catch(error => res.status(400).json( error ));
+    .catch(error => {
+        console.log("Error on exports.createBook : " + error );
+        res.status(401).json( "Une erreur s'est produite lors de la création du livre");
+    });
 
 };
 
@@ -110,10 +122,16 @@ exports.modifyBook = (req, res, next) => {
 
         Book.updateOne({ _id: book._id}, book)
         .then(() => res.status(200).json({ message: "Livre mis à jour."}))
-        .catch(error => res.status(400).json( error ));
+        .catch(error => {
+            console.log("Error on exports.modifyBook 2 : " + error );
+            res.status(400).json( "Une erreur s'est produite lors de la mis à un jour d'un livre");
+        });
         
     })
-    .catch(error => res.status(400).json( error ))
+    .catch(error => {
+        console.log("Error on exports.modifyBook 1 : " + error );
+        res.status(400).json( "Une erreur s'est produite lors de la mis à un jour d'un livre");
+    });
 
 };
 
@@ -134,10 +152,16 @@ exports.deleteBook = (req, res, next) => {
 
         Book.deleteOne({ _id: book._id })
         .then(() => res.status(200).json({ message: "Livre supprimé."}))
-        .catch(error => res.status(401).json( error ));
+        .catch(error => {
+            console.log("Error on exports.deleteBook 2 : " + error );
+            res.status(401).json( "Une erreur s'est produite lors de la suppression d'un livre");
+        });
         
     })
-    .catch(error => res.status(500).json( error ));
+    .catch(error => {
+        console.log("Error on exports.deleteBook 1 : " + error );
+        res.status(500).json( "Une erreur s'est produite lors de la suppression d'un livre");
+    });
 
 };
 
@@ -175,9 +199,15 @@ exports.addBookRating = (req, res, next) => {
             averageRating: book.averageRating
         })
         .then(result => res.status(201).json( book ))
-        .catch(error => res.status(401).json( error ));
+        .catch(error => {
+            console.log("Error on exports.addBookRating 2 : " + error );
+            res.status(401).json( "Une erreur s'est produite lors de l'ajout d'une note");
+        });
 
     })
-    .catch( error => res.status(400).json( error ));
+    .catch(error => {
+        console.log("Error on exports.addBookRating 1 : " + error );
+        res.status(400).json( "Une erreur s'est produite lors de l'ajout d'une note");
+    });
 
 };
